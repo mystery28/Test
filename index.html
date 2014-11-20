@@ -1,0 +1,224 @@
+<HTML>
+  <HEAD>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html"; charset="Win1251">
+	<TITLE>Test</TITLE>
+
+  <link rel="stylesheet" href="style_i.css" type="text/css">
+
+  <script type="text/javascript">
+	var req = new XMLHttpRequest(),
+	    colBookPerPage = 3,
+	    db = new Object(),
+		filterIdPublisher = 0,
+		filterIdAuthor = 0,
+		filterTitle = '',
+		filterIdTechnology = 0,
+		typeSort = new Array();
+
+	function createHeader() {
+	  var table = document.createElement('table');
+	  table.setAttribute('id', 'tableHeader');
+	  table.setAttribute('width', '860');
+	  table.className = 'tablePages';
+
+	  var row = table.insertRow(-1);
+	  var cell = row.insertCell(-1);
+	  cell.className = 'tdHeaderPanel';
+	  cell.innerHTML = '<a href="users.html">administration</a>';
+	  row = table.insertRow(-1);
+	  cell = row.insertCell(-1);
+	  cell.className = 'tdHeaderPanel';
+	  cell.innerHTML = '<p align="center">Books list</a>';
+
+	  document.body.appendChild(table);
+	}
+
+	function applyFilter(p) {
+	  switch(p.id) {
+	    case 'buttonFilterTitle': filterTitle = document.getElementById("inputFilterTitle").value; break; 
+		case 'selectPublisher':	filterIdPublisher = p.value; break;
+	    case 'selectAuthor':	filterIdAuthor = p.value; break;
+	    case 'selectTechnology': filterIdTechnology = p.value; break;
+	  }
+	  
+	  showTable(db,1,colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);
+    }	
+	
+	function optionPanel() {
+	  var table = document.createElement('table');
+	  table.setAttribute('id', 'tablePanel');
+	  table.className = 'tablePages';
+	  table.innerHTML = '<col class="col1"> <col class="col2"> <col class="col3"> <col class="col4">';
+	  
+	  var row = table.insertRow(-1);
+	  var cell = row.insertCell(-1);
+	  cell.className = 'tdOptionPanel';
+	  cell.innerHTML = '<input id="inputFilterTitle" placeholder="input title name"/>';
+		
+	  cell = row.insertCell(-1);
+	  cell.className = 'tdOptionPanel';
+	  cell.innerHTML = '<button onClick="applyFilter(this);" id="buttonFilterTitle">search</button>';
+	  cell = row.insertCell(-1);
+	  cell.className = 'tdOptionPanel';
+	  cell.setAttribute('rowspan', '2','0');
+	  cell.setAttribute('colspan', '2','0');
+	  cell.innerHTML = '<select onChange="applyFilter(this);" id="selectTechnology" multiple>'+listNames(db.technology,'technology')+'</select>';
+	  
+	  row = table.insertRow(-1);
+      cell = row.insertCell(-1);
+	  cell.className = 'tdOptionPanel'; 
+	  cell.innerHTML = '<select onChange="applyFilter(this);" id="selectPublisher">'+listNames(db.publisher,'publisher')+'</select>';	
+      cell = row.insertCell(-1);
+	  cell.className = 'tdOptionPanel';
+	  cell.innerHTML = '<select onChange="applyFilter(this);" id="selectAuthor">'+listNames(db.author,'author')+'</select>';	
+	  
+	  document.body.appendChild(table);
+	}
+	
+	function loadDB() {
+	  req.open("POST", "http://www.test_1.ua//db.json", true);
+	  req.onreadystatechange = showBooks;   // обработчик
+	  req.send();
+	}
+    
+	function showBooks() {
+	  if (req.readyState == 4) {
+	    if (req.status == 200) {
+	      db = eval('(' + req.responseText + ')');
+		  
+		  // create 2 new record in db for sort
+		  for (var i in db.books) {
+			db.books[i].publisher_name = getName(db.publisher,db.books[i].publisher_id);
+			db.books[i].author_name = getName(db.author,db.books[i].author_id);
+		  }  
+		  
+		  optionPanel();
+		  showTable(db,1,colBookPerPage,0,0,'',0);
+	    }
+	  }
+	};
+
+	function listNames(mas,id) {
+	  var result = '';
+	  result = '<option	value="0">select '+id+'</option>';
+	  for (var value in mas) {
+	    result += '<option value="'+mas[value].id+'">';
+	    result += mas[value].name; 
+	    result += '</option>';
+	  }
+	  return result;
+	}
+	
+	function getName(mas,id) {
+	  var result = 'noname';
+	  for (var value in mas) {
+	    if (mas[value].id === id) result = mas[value].name; 
+	  }
+	  return result;
+	}
+	
+	function sortBooks(id) {
+	  if (id == typeSort[0]) {
+	    if (typeSort[1] == 0) typeSort[1] = 1;
+		else if (typeSort[1] == 1) typeSort[1] = 0;
+	  }
+	  else { typeSort[0] = id; typeSort[1] = 0; }
+	  
+	  if (typeSort[1]==0) db.books.sort( function(a,b) { return(a[id]>b[id]) });
+	  if (typeSort[1]==1) db.books.sort( function(a,b) { return(a[id]<b[id]) });	  
+	  
+	  showTable(db,1,colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);
+	}
+	
+	function showTable(database, currentPage, colBookPerPage, idPublisher, idAuthor, filterTitle, idTechnology) {
+	  var dbBook = database.books,
+	      rows = 0,//dbBook.length,
+		  dbBookFilter = new Array();
+		  beginRow = (currentPage - 1) * colBookPerPage,
+	      endRow = currentPage * colBookPerPage;
+	  
+	  for (var i in dbBook) {
+	    if (idPublisher>0 && idPublisher!=dbBook[i].publisher_id) continue;
+	    if (idAuthor>0 && idAuthor!=dbBook[i].author_id) continue;
+		if (filterTitle.length>0 && dbBook[i].title.toLowerCase().indexOf(filterTitle.toLowerCase())==-1) continue;
+		if (idTechnology>0 && idTechnology!=dbBook[i].description) continue;
+		
+		dbBookFilter[rows++] = dbBook[i];
+	  }
+	  
+	  if (endRow > rows) endRow = rows;
+	  
+	  var table = document.getElementById("tableBooks");
+	  if (table) table.parentNode.removeChild(table);
+	  	  
+	  var table = document.createElement('table');
+	  table.setAttribute('id', 'tableBooks');
+	  table.className = 'tableBooks';
+	  table.innerHTML = '<col class="col1"> <col class="col2"> <col class="col3"> <col class="col4">';
+
+	  var row = table.insertRow(-1);
+	  var cell = row.insertCell(-1);
+
+	  row.className = 'trTitleBooks';
+	  
+	  cell.innerHTML = '<a href="#" onClick="sortBooks(&#039;title&#039;);">title</a>';
+	  cell = row.insertCell(-1);
+	  cell.innerHTML = '<a href="#" onClick="sortBooks(&#039;publisher_name&#039;);">publisher</a>';
+	  cell = row.insertCell(-1);
+	  cell.innerHTML = '<a href="#" onClick="sortBooks(&#039;author_name&#039;);">author</a>';
+	  cell = row.insertCell(-1);
+	  cell.innerHTML = 'action';
+
+	  for (var i = beginRow; i < endRow; i++) {		
+		row = table.insertRow(-1);
+		row.className = 'trBooks';
+		cell = row.insertCell(-1);
+		cell.innerHTML = dbBookFilter[i].title;
+		cell = row.insertCell(-1);
+//		cell.innerHTML = getName(database.publisher,dbBookFilter[i].publisher_id);
+		cell.innerHTML = dbBookFilter[i].publisher_name;
+		cell = row.insertCell(-1);
+//		cell.innerHTML = getName(database.author,dbBookFilter[i].author_id);
+		cell.innerHTML = dbBookFilter[i].author_name;
+		cell = row.insertCell(-1);
+		cell.innerHTML = '<a href="book_detail.html">details</a> / <a href="#">download</a>';
+	  }
+	  	  
+	  document.body.appendChild(table);
+	  
+	  showPages(rows,colBookPerPage,currentPage);
+	};
+	
+	function showPages(rows,colBookPerPage,currentPage) {
+	  var table = document.getElementById("tableBooks"),
+		  allPages = Math.ceil(rows / colBookPerPage),
+	      numNextPage = currentPage + 1,
+	      numPrevPage = currentPage - 1;
+
+	  if (numNextPage > allPages) numNextPage = allPages;
+	  if (numPrevPage < 1) numPrevPage = 1;
+	  	
+	  var row = table.insertRow(-1);
+	  var cell = row.insertCell(-1);
+	  cell.className = 'tdPages';
+	  cell.setAttribute('colspan', '4','0');
+
+	  var numberList = '<a href="#" onclick="showTable(db,'+numPrevPage+',colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);">< Prev</a>';
+	  for (var i = 0, j = 0; i < rows; i+=colBookPerPage, j++) {
+	    if (j==currentPage-1) numberList += '<a class="selectedPage" href="#" onclick="showTable(db,'+(j+1)+',colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);"> '+(j+1)+' </a>';
+	    else numberList += '<a href="#" onclick="showTable(db,'+(j+1)+',colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);"> '+(j+1)+' </a>';
+	  }
+	  numberList += '<a href="#" onclick="showTable(db,'+numNextPage+',colBookPerPage,filterIdPublisher,filterIdAuthor,filterTitle,filterIdTechnology);">Next ></a>';
+	  cell.innerHTML = numberList;
+
+	  document.body.appendChild(table);
+	}
+
+  </script>
+
+  </HEAD>
+  <BODY onload='createHeader(); loadDB();'>
+
+  
+  </BODY>
+</HTML>

@@ -1,0 +1,75 @@
+.tableBooks {
+ margin:0px auto;
+ padding:0px;
+ font-weight: bold;
+ border:0px solid #000000;
+ border-spacing: 0;
+}
+
+.tablePages {
+ margin:0px auto;
+ padding:0px;
+ font-weight: bold;
+ border:0px solid #000000;
+ border-spacing: 0;
+}
+
+.tdPages {
+	border:0px solid #000000;
+	text-align:right;
+}
+
+.tdOptionPanel {
+	border:0px solid #000000;
+	text-align:left;
+}
+
+.tdHeaderPanel {
+	border:0px solid #000000;
+	text-align:right;
+}
+
+.selectedPage {
+	font-size:14px;
+	color:Blue;
+}
+
+a {
+	font-size:12px;
+	text-decoration:none;
+}
+
+.col1 { width: 320px; }
+.col2 { width: 280px; }
+.col3 { width: 120px; }
+.col4 { width: 140px; }
+
+.userCol1 { width: 120px; }
+.userCol2 { width: 180px; }
+
+td {
+	vertical-align:middle;
+	border:1px solid #000000;
+	text-align:left;
+	padding:8px;
+	font-size:12px;
+	font-family:Arial;
+	font-weight:normal;
+}
+
+select {
+	width: 200px;
+}
+
+input {
+	width: 300px;
+}
+
+.trTitleBooks {
+	background-color:#b2b2b2;
+	border:1px solid #000000;
+	text-align:center;
+	font-size:14px;
+	font-family:Arial;
+	font-weight:bold;
+}
