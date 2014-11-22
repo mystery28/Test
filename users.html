@@ -23,7 +23,7 @@
 	    if (req.status == 200) {
 	        db = eval('(' + req.responseText + ')');
 			
-			var i = 1;
+			var i = 0;
 			for (var value in db.users)
 			  masId[i++] = (db.users[value].id);
 			
@@ -33,7 +33,7 @@
 	};
 	
 	function getUserbyId(id) {
-	  var result;
+	  var result = -1;
 	  for (var value in db.users) {
 	    if (id == db.users[value].id) result = value;
 	  }
@@ -43,17 +43,19 @@
 	function switchForm(t) {
 	  if (workMode == 'read') {
 	    workMode = 'edit';
-    	
-		clearTable();
+   	
+		var rowIndex = (typeof t == "undefined")? -1: t.rowIndex-1;
+	  
+		clearTableBody();
 
-		if (typeof t == "undefined") {
+		if (rowIndex == -1) {
 		  document.getElementById("inputLogin").setAttribute('numUser', -1);
 		  document.getElementById("inputLogin").value = '';
 		  document.getElementById("inputPasswd").value = '';
 		  document.getElementById("inputRepasswd").value = '';
 		}
 		else {
-		  var numMasUser = getUserbyId(masId[t.rowIndex]);
+		  var numMasUser = getUserbyId(masId[rowIndex]);
 		
 		  document.getElementById("inputLogin").setAttribute('numUser', numMasUser);
 		  document.getElementById("inputLogin").value = db.users[numMasUser].login;
@@ -61,21 +63,29 @@
 		  document.getElementById("inputRepasswd").value = db.users[numMasUser].pass;
 		}
 		
+		document.getElementById('showForm').style.display = 'none';
 		document.getElementById('editForm').style.display = 'block';
 	  }
 	  else if (workMode == 'edit') {
 	    workMode = 'read';
 		
+		document.getElementById('showForm').style.display = 'block';
 		document.getElementById('editForm').style.display = 'none';
 	  }	
 	}
 	
 	function deleteUser(t) {
-	  var numMasUser = getUserbyId(masId[t.rowIndex]);
-	  db.users.splice(numMasUser,1);
+	  if (typeof t != "undefined") {
+		var rowIndex = t.rowIndex-1,
+			numMasUser = getUserbyId(masId[rowIndex]);
+		
+		if (numMasUser!=-1) {
+		  db.users.splice(numMasUser,1);
 	  
-	  sendData();
-	  loadDB();
+		  sendData();
+		  loadDB();
+		}
+	  }
 	}
 	
 	function editUser() {
@@ -105,11 +115,13 @@
 	  }
 	}
 	
-	function clearTable() {
-	  var title = document.getElementById("titleUsers");
-	  if (title) title.remove();
+	function clearTableBody() {
 	  var table = document.getElementById("tableUsers");
-	  if (table) table.parentNode.removeChild(table);	
+	  if (table) {
+		while (table.tBodies[0].rows[0]) {
+		  table.tBodies[0].deleteRow(0);
+		}	  
+	  }
 	}
 	
 	function genNewUserId() {
@@ -125,30 +137,14 @@
 	
 	function showTable(database) {
 	  var dbUsers = database.users,
-	      rows = dbUsers.length;
+	      rows = dbUsers.length,
+		  table = document.getElementById("tableUsers").getElementsByTagName('tbody')[0],
+		  row,
+		  cell;
 		
-	  clearTable();
-		
-	  var title = document.createElement('p');
-	  title.setAttribute('id', 'titleUsers');
-	  title.setAttribute('align', 'center');
-	  title.innerHTML = 'administrators';
-	  document.body.appendChild(title);
-	  	  
-	  var table = document.createElement('table');
-	  table.setAttribute('id', 'tableUsers');
-	  table.className = 'tableBooks';
-	  table.innerHTML = '<col class="userCol1"> <col class="userCol2">';
-
-	  var row = table.insertRow(-1);
-	  var cell = row.insertCell(-1);
-
-	  row.className = 'trTitleBooks';
-
-	  cell.innerHTML = 'login';
-	  cell = row.insertCell(-1);
-	  cell.innerHTML = 'action';
-
+	  // clear body table
+	  clearTableBody();
+	  
 	  for (var i = 0; i < rows; i++) {
 		row = table.insertRow(-1);
 		cell = row.insertCell(-1);
@@ -160,31 +156,25 @@
 		else {
 		  cell.innerHTML = '<a href="#" onClick="switchForm(this.parentNode.parentNode);">details</a> / <a href="#" onClick="deleteUser(this.parentNode.parentNode);">delete</a>';
 		}
+		
+		table.appendChild(row);
 	  }
-	  
-	  row = table.insertRow(-1);
-	  cell = row.insertCell(-1);
-	  cell.className = 'tdOptionPanel';
-	  cell.innerHTML = '<a href="#" onClick="switchForm();">add...</a>';
-	  
-	  document.body.appendChild(table);
-	};
+	}
 	
 	function sendData() {
-		$.ajax({
-		  type: 'POST',
-		  url:  'user_new.php',
-		  data: db,
-		  status:function (number) {
-//			alert(number);
-		  },
-		  endstatus:function (number) {
-//			alert(number);
-		  },
-		  success:function (data) {
-//			alert(data);
-          }
-		});
+	  var params = 'db='+encodeURIComponent(JSON.stringify(db)),
+		  xmlhttp = new XMLHttpRequest();
+	  
+	  xmlhttp.open("POST", 'user_new.php?r="+Math.random()', true);
+	  xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	  xmlhttp.onreadystatechange = function() {
+	            if (xmlhttp.readyState == 4 && 
+					xmlhttp.status == 200) { 
+	                console.log(xmlhttp.responseText);
+	            }
+	  } 
+	  
+	  xmlhttp.send(params);
 	}
 	
   </script>
@@ -192,6 +182,30 @@
   </HEAD>
   <BODY onload='loadDB();'>
  
+  <div id="showForm" style="display:block">
+	<p align="center">administrators</p>
+
+	<table id="tableUsers" class="tableBooks">
+	  <colgroup>
+		<col class="userCol1"> 
+		<col class="userCol2">
+	  </colgroup>
+	  <thead>
+		<tr class="trTitleBooks">
+	      <td>login</td>
+		  <td>action</td>
+		</tr>
+	  </thead>
+	  <tbody>
+	  </tbody>
+	  <tfoot>
+		<tr>
+		  <td class="tdOptionPanel"><a href="#" onClick="switchForm();">add...</a></td>
+	    </tr>
+	</table>
+
+  </div>
+  
   <div id="editForm" style="display:none">  
 	<p align="center">admin add / edit</p>
   
