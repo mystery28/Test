@@ -183,8 +183,11 @@
   <BODY onload='loadDB();'>
  
   <div id="showForm" style="display:block">
-	<p align="center">administrators</p>
-
+	<div class="userEditHead">
+	  <p align="center">administrators</p>
+	</div>
+	
+	<div class="userEditHead">
 	<table id="tableUsers" class="tableBooks">
 	  <colgroup>
 		<col class="userCol1"> 
@@ -203,35 +206,26 @@
 		  <td class="tdOptionPanel"><a href="#" onClick="switchForm();">add...</a></td>
 	    </tr>
 	</table>
-
+	</div>
   </div>
   
-  <div id="editForm" style="display:none">  
-	<p align="center">admin add / edit</p>
-  
-	<form name="userEdit" method="post" action="#">
-	  <table class="tablePages" align="center">
-		<tr>
-		  <td class="tdPages">login</td>
-		  <td class="tablePages"><input type="text" size="30" id="inputLogin"></td>
-		</tr>
-		<tr>
-		  <td class="tdPages">password</td>
-		  <td class="tablePages"><input type="password" size="30" id="inputPasswd"></td>
-		</tr>
-		<tr>
-		  <td class="tdPages">confirm password</td>
-		  <td class="tablePages"><input type="password" size="30" id="inputRepasswd"></td>
-		</tr>
-	  </table>
-	</form>
+  <div id="editForm" class="userEdit" style="display:none">  
+	<div class="userEditHead">
+	  <p align="center">admin add / edit</p>
+	</div>
+	
+	<div class="userEdit">
+	  <form name="userEdit" method="post" action="#">
+		<p class="pUserEdit">login <input type="text" size="30" id="inputLogin"></p>
+		<p class="pUserEdit">password <input type="password" size="30" id="inputPasswd"></p>
+		<p class="pUserEdit">confirm password <input type="password" size="30" id="inputRepasswd"></p>
+	  </form>
+	</div>
 
-	<table align="center" cellpadding="8px">
-	  <tr>
-		<td class="tdPages"><a href="#" onClick="editUser();">save</a></td>
-		<td class="tablePages"><a href="#" onClick="switchForm(); showTable(db);">close</a></td>
-	  </tr>
-	</table>
+	<div class="userEditFoot">
+	  <a class="aUserEdit" href="#" onClick="editUser();">save</a>
+	  <a class="aUserEdit" href="#" onClick="switchForm(); showTable(db);">close</a>
+	</div>
   </div>
   
   </BODY>

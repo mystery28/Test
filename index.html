@@ -168,37 +168,25 @@
 
   </HEAD>
   <BODY onload='loadDB();'>
-	<table width="860" id="tableHeader" class="tablePages">
-	  <tbody>
-		<tr>
-		  <td class="tdHeaderPanel"><a href="users.html">administration</a></td>
-		</tr>
-		<tr>
-		  <td class="tdHeaderPanel"><p align="center">Books list</p></td>
-		</tr>
-	  </tbody>
-	</table>
+	<div id="header">
+	  <p align="right"><a class="aUserEdit" href="users.html">administration</a></p>
+	  <p align="center">Books list</p>
+	</div>
 	  
-	<table id="tablePanel" class="tablePages">
-	  <colgroup>
-		<col class="col1"> 
-		<col class="col2"> 
-		<col class="col3"> 
-		<col class="col4">
-	  </colgroup>
-	  <tbody>
-		<tr>
-		  <td class="tdOptionPanel"><input placeholder="input title name" id="inputFilterTitle"></td>
-		  <td class="tdOptionPanel"><button id="buttonFilterTitle" onclick="applyFilter(this);">search</button></td>
-		  <td class="tdOptionPanel" rowspan="2" colspan="2"><select multiple="" id="selectTechnology" onchange="applyFilter(this);"></select></td>
-		</tr>
-		<tr>
-		  <td class="tdOptionPanel"><select id="selectPublisher" onchange="applyFilter(this);"></select></td>
-		  <td class="tdOptionPanel"><select id="selectAuthor" onchange="applyFilter(this);"></select></td>
-		</tr>
-	  </tbody>
-	</table>	
+	<div id="optionPanel">
+	  <div id="selectBlock1">
+		<input placeholder="input title name" id="inputFilterTitle">
+		<button id="buttonFilterTitle" onclick="applyFilter(this);">search</button>
+		<br>
+		<select id="selectPublisher" onchange="applyFilter(this);"></select>
+		<select id="selectAuthor" onchange="applyFilter(this);"></select>
+	  </div>
+	  <div id="selectBlock2">
+		<select multiple="" id="selectTechnology" onchange="applyFilter(this);"></select>
+	  </div>
+	</div>	
 	  
+	<div id="body">
 	<table id="tableBooks" class="tableBooks">
 	  <colgroup>
 		<col class="col1"> 
@@ -219,6 +207,7 @@
 	  <tfoot>
 	  </tfoot>
 	</table>
+	</div>
 	  
   </BODY>
 </HTML>

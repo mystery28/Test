@@ -1,3 +1,86 @@
+#header {
+ text-align: center;
+ margin: 0 auto;
+ width: 860px;
+ height: 70px;
+}
+
+#optionPanel {
+ text-align: left;
+ margin: 0 auto;
+ width: 860px;
+ height: 90px;
+}
+
+#selectBlock1 {
+ float: left;
+ width: 600px;
+ height: 90px;
+}
+
+#selectBlock2 {
+ float: right;
+ width: 260px;
+ height: 90px;
+}
+
+#body {
+ text-align: center;
+ margin: 0 auto;
+ width: 860px;
+}
+
+select {
+ margin:10px 10px;
+ width:200px;
+}
+
+input {
+ margin:10px 10px;
+ width:200px;
+}
+
+button {
+ margin: 0px 10px;
+}
+
+#inputFilterTitle {
+ margin: 10px 10px;
+ width: 300px;
+}
+
+.pUserEdit {
+ text-align: right;
+}
+
+.userEditHead {
+ text-align: center;
+ margin: 0px auto;
+ width: 400px;
+}
+
+.userEdit {
+ text-align: right;
+ margin: 0px auto;
+ width: 400px;
+}
+
+.userEditFoot {
+ text-align: center;
+ margin: 0px auto;
+ width: 400px;
+}
+
+a {
+ font-size: 12px;
+ text-decoration: none;
+}
+
+.aUserEdit {
+ font-size: 14px;
+ margin: 0px 10px;
+}
+
 .tableBooks {
  margin:0px auto;
  padding:0px;
@@ -34,11 +117,6 @@
 	color:Blue;
 }
 
-a {
-	font-size:12px;
-	text-decoration:none;
-}
-
 .col1 { width: 320px; }
 .col2 { width: 280px; }
 .col3 { width: 120px; }
@@ -55,14 +133,6 @@ td {
 	font-size:12px;
 	font-family:Arial;
 	font-weight:normal;
-}
-
-select {
-	width: 200px;
-}
-
-input {
-	width: 300px;
 }
 
 .trTitleBooks {
