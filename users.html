@@ -5,62 +5,54 @@
 
     <link rel="stylesheet" href="style_i.css" type="text/css">
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script type="text/javascript">
-	var req = new XMLHttpRequest(),
-		workMode = 'read',
-		db = new Object(),
-		masId = new Array();
+	var workMode = 'read';
 
-    function loadDB() {
-	  req.open("POST", "http://www.test_1.ua//db.json", true);
-	  req.onreadystatechange = showUsers;   // обработчик
-	  req.send();
+	function loadItemsTable() {
+	  loadDB('queryAdmins', 'Admins', '', '');
+	}
+	
+	function loadDB(queryType, queryData, editType, editData) {
+	  var req = new XMLHttpRequest(),
+		  params = 'queryType=' + encodeURIComponent(queryType) +
+				   '&queryData=' + encodeURIComponent(queryData) +
+				   '&editType=' + encodeURIComponent(editType) +
+				   '&editData=' + encodeURIComponent(JSON.stringify(editData));
+	  req.open('POST', 'http://www.test_1.ua//work_base.php?r="+Math.random()', true);
+	  req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	  req.onreadystatechange = function() { loadData(req, queryType); };   // обработчик
+	  req.send(params);
 	}
     
-	function showUsers() {
+	function loadData(req,queryType) {
 	  if (req.readyState == 4) {
 	    if (req.status == 200) {
-	        db = eval('(' + req.responseText + ')');
-			
-			var i = 0;
-			for (var value in db.users)
-			  masId[i++] = (db.users[value].id);
-			
-			showTable(db);
+	      var db = eval('(' + req.responseText + ')');
+		  		  
+		  switch (queryType) {
+			case 'queryAdmins':	loadTableData(db);
+		  }
 	    }
 	  }
 	};
-	
-	function getUserbyId(id) {
-	  var result = -1;
-	  for (var value in db.users) {
-	    if (id == db.users[value].id) result = value;
-	  }
-	  return result;
-	}
-	
+    		
 	function switchForm(t) {
 	  if (workMode == 'read') {
 	    workMode = 'edit';
    	
 		var rowIndex = (typeof t == "undefined")? -1: t.rowIndex-1;
 	  
-		clearTableBody();
-
 		if (rowIndex == -1) {
-		  document.getElementById("inputLogin").setAttribute('numUser', -1);
+		  document.getElementById("inputLogin").setAttribute('data-id', -1);
 		  document.getElementById("inputLogin").value = '';
 		  document.getElementById("inputPasswd").value = '';
 		  document.getElementById("inputRepasswd").value = '';
 		}
 		else {
-		  var numMasUser = getUserbyId(masId[rowIndex]);
-		
-		  document.getElementById("inputLogin").setAttribute('numUser', numMasUser);
-		  document.getElementById("inputLogin").value = db.users[numMasUser].login;
-		  document.getElementById("inputPasswd").value = db.users[numMasUser].pass;
-		  document.getElementById("inputRepasswd").value = db.users[numMasUser].pass;
+		  document.getElementById("inputLogin").setAttribute('data-id', t.getAttribute('data-id'));
+		  document.getElementById("inputLogin").value = t.cells[0].innerHTML;
+		  document.getElementById("inputPasswd").value = t.getAttribute('data-pass');
+		  document.getElementById("inputRepasswd").value = t.getAttribute('data-pass');
 		}
 		
 		document.getElementById('showForm').style.display = 'none';
@@ -76,14 +68,10 @@
 	
 	function deleteUser(t) {
 	  if (typeof t != "undefined") {
-		var rowIndex = t.rowIndex-1,
-			numMasUser = getUserbyId(masId[rowIndex]);
+		var idUser = t.getAttribute('data-id');
 		
-		if (numMasUser!=-1) {
-		  db.users.splice(numMasUser,1);
-	  
-		  sendData();
-		  loadDB();
+		if (idUser != -1) {
+		  loadDB('queryAdmins', 'Admins', 'deleteAdmins', [idUser,0,0]);
 		}
 	  }
 	}
@@ -92,26 +80,17 @@
 	  var userName = document.getElementById("inputLogin").value,
 		  userPass = document.getElementById("inputPasswd").value,
 		  userRepass = document.getElementById("inputRepasswd").value,
-		  numMasUser = document.getElementById("inputLogin").getAttribute('numUser'),
-		  idUser = 0;
-	  
-	  if (numMasUser == -1) {
-		idUser = genNewUserId();
-	  }
-	  
-	  if (userName == '' || userPass != userRepass) alert("error edit");
+		  idUser = document.getElementById("inputLogin").getAttribute('data-id');
+	  	  
+	  if (userName == '') alert('empty login');
+	  else if (userPass != userRepass) alert("error password");
 	  else {
-		if (idUser) db.users.push({id: idUser,
-								   login: userName,
-								   pass: userPass})
+		if (idUser == -1) 
+		  loadDB('queryAdmins', 'Admins', 'insertAdmins', [0,userName,userPass]);
 		else {
-	      db.users[numMasUser].login = userName;
-		  db.users[numMasUser].pass = userPass;
+		  loadDB('queryAdmins', 'Admins', 'editAdmins', [idUser,userName,userPass]);
 		}
-		
 		switchForm();
-		sendData();
-		loadDB();
 	  }
 	}
 	
@@ -123,24 +102,15 @@
 		}	  
 	  }
 	}
-	
-	function genNewUserId() {
-	  var maxId = masId[1];
-	  
-	  for (var i = 2; i < masId.length; i++) {
-	    if (maxId < masId[i]) maxId = masId[i];
-	  }
-	  
-	  maxId++;
-	  return maxId;
-	}
-	
-	function showTable(database) {
-	  var dbUsers = database.users,
-	      rows = dbUsers.length,
+		
+	function loadTableData(dbData) {
+	  var dbUsers = dbData,
+	      rows = 0,
 		  table = document.getElementById("tableUsers").getElementsByTagName('tbody')[0],
 		  row,
 		  cell;
+		
+	  rows = (dbUsers) ? dbUsers.length : 0;
 		
 	  // clear body table
 	  clearTableBody();
@@ -148,6 +118,8 @@
 	  for (var i = 0; i < rows; i++) {
 		row = table.insertRow(-1);
 		cell = row.insertCell(-1);
+		row.setAttribute('data-id',dbUsers[i].id);
+		row.setAttribute('data-pass',dbUsers[i].pass);
 		cell.innerHTML = dbUsers[i].login;
 		cell = row.insertCell(-1);
 		if (dbUsers[i].login.toUpperCase()=='ADMIN') {
@@ -160,27 +132,11 @@
 		table.appendChild(row);
 	  }
 	}
-	
-	function sendData() {
-	  var params = 'db='+encodeURIComponent(JSON.stringify(db)),
-		  xmlhttp = new XMLHttpRequest();
-	  
-	  xmlhttp.open("POST", 'user_new.php?r="+Math.random()', true);
-	  xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	  xmlhttp.onreadystatechange = function() {
-	            if (xmlhttp.readyState == 4 && 
-					xmlhttp.status == 200) { 
-	                console.log(xmlhttp.responseText);
-	            }
-	  } 
-	  
-	  xmlhttp.send(params);
-	}
-	
+		
   </script>
 
   </HEAD>
-  <BODY onload='loadDB();'>
+  <BODY onload='loadItemsTable();'>
  
   <div id="showForm" style="display:block">
 	<div class="userEditHead">
@@ -224,7 +180,7 @@
 
 	<div class="userEditFoot">
 	  <a class="aUserEdit" href="#" onClick="editUser();">save</a>
-	  <a class="aUserEdit" href="#" onClick="switchForm(); showTable(db);">close</a>
+	  <a class="aUserEdit" href="#" onClick="switchForm();">close</a>
 	</div>
   </div>
   
