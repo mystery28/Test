@@ -41,7 +41,7 @@
 				   '&querySortField=' + encodeURIComponent(querySortField) +
 				   '&querySelect=' + encodeURIComponent(querySelect) +
 				   '&querySelectField=' + encodeURIComponent(JSON.stringify(querySelectField));
-	  req.open('POST', 'http://www.test_1.ua//work_base.php?r="+Math.random()', true);
+	  req.open('POST', 'work_base.php', true);
 	  req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	  req.onreadystatechange = function() { loadData(req,queryType,queryData,currentList); };   // обработчик
 	  req.send(params);
@@ -99,14 +99,14 @@
 		  row,
 		  cell;
 	  
-	  rows = (dbBook) ? dbBook.length : 0;
+	  rows = (dbBook) ? dbBook.length : 0; 
 	  
 	  // clear body & footer table
 	  clearDataTable("tableBooks");
 	  
 	  if (endRow > rows) endRow = rows;
 	  
-	  for (var i = beginRow; i < endRow; i++) {			  
+	  for (var i = beginRow; i < endRow; i++) {  
 		row = table.insertRow(-1);
 		row.className = 'trBooks';
 		row.setAttribute('data-id',dbBook[i].id);
@@ -123,6 +123,17 @@
 		table.appendChild(row);
 	  }
 	  	  
+	  // add new book
+	  row = table.insertRow(-1);
+	  row.className = 'trBooks';
+	  row.setAttribute('data-id',-1);
+	  cell = row.insertCell(-1);
+	  cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode)">...</a>';
+	  for (var i=0;i<3;i++) {
+	    cell = row.insertCell(-1);
+		cell.innerHTML = '<a></a>';
+	  }
+
 	  showPages(rows,colBookPerPage,currentPage);
 	};
 	
@@ -140,12 +151,12 @@
 	  cell.className = 'tdPages';
 	  cell.setAttribute('colspan', '4','0');
 
-	  var numberList = '<a href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+numPrevPage+');">< Prev</a>';
+	  var numberList = '<a class="numPages" href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+numPrevPage+');">< Prev</a>';
 	  for (var i = 0, j = 0; i < rows; i+=colBookPerPage, j++) {
 	    if (j==currentPage-1) numberList += '<a class="selectedPage" href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+(j+1)+');"> '+(j+1)+' </a>';
-	    else numberList += '<a href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+(j+1)+');"> '+(j+1)+' </a>';
+	    else numberList += '<a class="numPages" href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+(j+1)+');"> '+(j+1)+' </a>';
 	  }
-	  numberList += '<a href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+numNextPage+');">Next ></a>';
+	  numberList += '<a class="numPages" href="#" onclick="loadDB(&#039queryBook&#039, &#039book&#039, typeSort[1], typeSort[0], filterEnabled, typeFilter, '+numNextPage+');">Next ></a>';
 	  cell.innerHTML = numberList;
 
 	  table.appendChild(row);

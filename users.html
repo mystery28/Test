@@ -18,7 +18,7 @@
 				   '&queryData=' + encodeURIComponent(queryData) +
 				   '&editType=' + encodeURIComponent(editType) +
 				   '&editData=' + encodeURIComponent(JSON.stringify(editData));
-	  req.open('POST', 'http://www.test_1.ua//work_base.php?r="+Math.random()', true);
+	  req.open('POST', 'work_base.php', true);
 	  req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	  req.onreadystatechange = function() { loadData(req, queryType); };   // обработчик
 	  req.send(params);

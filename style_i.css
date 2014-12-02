@@ -1,3 +1,32 @@
+select {
+ margin:10px 10px;
+ width:200px;
+}
+
+button {
+ margin: 0px 10px;
+}
+
+form input {
+ margin:10px 10px;
+ width:200px;
+}
+
+table a {
+ font-size: 12px;
+ text-decoration: none;
+}
+
+td {
+	vertical-align:middle;
+	border:1px solid #000000;
+	text-align:left;
+	padding:8px;
+	font-size:12px;
+	font-family:Arial;
+	font-weight:normal;
+}
+
 #header {
  text-align: center;
  margin: 0 auto;
@@ -30,18 +59,16 @@
  width: 860px;
 }
 
-select {
- margin:10px 10px;
- width:200px;
+#bookEditHead1 {
+ float: left;
+ width: 80px;
+ height: 150px;
 }
 
-input {
- margin:10px 10px;
- width:200px;
-}
-
-button {
- margin: 0px 10px;
+#bookEditHead2 {
+ float: right;
+ width: 320px;
+ height: 150px;
 }
 
 #inputFilterTitle {
@@ -49,8 +76,86 @@ button {
  width: 300px;
 }
 
+#inputTitle {
+ margin: 2px;
+ width: 300px;
+}
+
+#selectTechnology {
+ margin: 2px;
+ width: 150px;
+}
+
+#inputDescription {
+ margin: 2px;
+ width: 320px;
+ height: 200px;
+ resize: none;
+}
+
+#inputFilePath {
+ margin-top: 20px;
+ width: 320px;
+}
+
+#bookEditFoot {
+ margin-top: 20px;
+}
+
+#selectFile {
+position: absolute;
+}
+
+.blockSelectFile {
+position: absolute;
+z-index: 3;
+width: 150px;
+height: 21px;
+margin-left: -155px;
+}
+
+.customFile {
+width: 219px;
+margin-left: -140px;
+cursor: default;
+height: 21px;
+z-index: 2;
+filter: alpha(opacity: 0);
+opacity: 0;
+}
+
+.newFileButton {
+position: absolute;
+z-index: 1;
+width: 85px;
+height: 21px;
+float: left;
+}
+
+.selectEditBookPA {
+ margin: 2px;
+ width: 250px;
+}
+
+.label {
+ width: 70px;
+ display: block;
+ float: left;
+ margin-top: 2px;
+}
+
+.label2 {
+ width: 150px;
+ margin-top: 5px;
+}
+
 .pUserEdit {
  text-align: right;
+}
+
+.pBookEdit {
+ margin-left: 12px;
+ float: left;
 }
 
 .userEditHead {
@@ -65,15 +170,16 @@ button {
  width: 400px;
 }
 
+.bookEditForm {
+ text-align: left;
+ margin: 0px auto;
+ width: 420px;
+}
+
 .userEditFoot {
  text-align: center;
  margin: 0px auto;
  width: 400px;
-}
-
-a {
- font-size: 12px;
- text-decoration: none;
 }
 
 .aUserEdit {
@@ -112,9 +218,14 @@ a {
 	text-align:right;
 }
 
+.numPages {
+	font-size:12px;
+	color:Black;
+}
+
 .selectedPage {
 	font-size:14px;
-	color:Blue;
+	color:Black;
 }
 
 .col1 { width: 320px; }
@@ -124,16 +235,6 @@ a {
 
 .userCol1 { width: 120px; }
 .userCol2 { width: 180px; }
-
-td {
-	vertical-align:middle;
-	border:1px solid #000000;
-	text-align:left;
-	padding:8px;
-	font-size:12px;
-	font-family:Arial;
-	font-weight:normal;
-}
 
 .trTitleBooks {
 	background-color:#b2b2b2;
