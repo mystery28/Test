@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style_i.css" type="text/css">
 	
 	<?
-	  $bookId = ($_POST['bookId']);
+	  $bookId = ($_GET['bookId']);
 	?>
 	
 	<script type="text/javascript">
@@ -66,15 +66,6 @@
 
 		document.getElementById("inputDescription").value = db[0].description;
 		document.getElementById("inputFilePath").value = db[0].file_type;
-
-//		document.getElementById("selectPublisher").value = db[0].publisher_id;
-//		document.getElementById("selectAuthor").value = db[0].author_id;
-//		document.getElementById("selectTechnology").value = db[0].technology_id;
-
-//		document.getElementById("inputPublisher").setAttribute('data-id', db[0].publisher_id);
-//		document.getElementById("inputPublisher").value = db[0].publisher_name;
-//		document.getElementById("inputAuthor").setAttribute('data-id', db[0].author_id);
-//		document.getElementById("inputAuthor").value = db[0].author_name;
 	  }
 	}
 
@@ -142,7 +133,14 @@
 	}
 	
 	function loadValue() {
+	  document.getElementById('inputFilePath').setAttribute('style','background-color: #FFFFFF');
 	  document.getElementById('inputFilePath').value = document.getElementById('selectFile').value;
+	}
+
+	function uploadResult(text) {
+//	  document.getElementById('result').innerHTML = text;
+	  if (text == 'success') document.getElementById('inputFilePath').setAttribute('style','background-color: #9CEE90');
+	  if (text == 'error')   document.getElementById('inputFilePath').setAttribute('style','background-color: #F5DEB3');
 	}
 	
 	</script>
@@ -160,13 +158,18 @@
 	<div class="label2"> description: </div>
 	<div><textarea id="inputDescription"></textarea></div>
 	
-	<div><input type="text" id="inputFilePath"><button>Upload</button></div>
+	<form id="loadFile" enctype="multipart/form-data" method="POST" action="load_file.php" target="uploader">
+	<input  type="hidden" name="MAX_FILE_SIZE" value="100000000"  />
+	<iframe name="uploader" src="" style="display: none"></iframe>
+	<div><input type="text" id="inputFilePath"><input id="buttonUpload" type="submit" value="Upload"/></div>
 	<div class="blockSelectFile"></div>
-	<input class="customFile" title="choose file" type="file" id="selectFile" onchange="loadValue();">
+	  <input class="customFile" name="fileBook" title="choose file" type="file" id="selectFile" onchange="loadValue();" />
 	<div><a class="newFileButton" href="#">choose...</a></div>
+	<!-- <div id="result"></div> -->
+	</form>
 
-	<br>
 	<div id="bookEditFoot">
+	<br>
 	  <div class="pBookEdit"><a href="#" onClick="editBook();">[ save ]</a></div>
 	  <div class="pBookEdit"><a href="#" onClick="deleteBook();">[ delete ]</a></div>
 	  <div class="pBookEdit"><a href="index.html" onClick="">[ close ]</a></div>

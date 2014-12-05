@@ -10,16 +10,15 @@
 		filterEnabled = 'false',
 		typeFilter = ['%', 0, 0, 0], // filter: 0 - title, 1 - publisher_id, 2 - author_id, 3 - book->book_technology:technology_id;
 		typeSort = ['','none'];
-//		masId = new Array();
 
 	function applyFilter(p) {
 	  filterEnabled = 'false';
 	  
 	  switch(p.id) {
-	    case 'buttonFilterTitle': typeFilter[0] = document.getElementById("inputFilterTitle").value; filterEnabled = 'true'; break; 
-		case 'selectPublisher':	typeFilter[1] = p.value; filterEnabled = 'true'; break;
-	    case 'selectAuthor':	typeFilter[2] = p.value; filterEnabled = 'true'; break;
-	    case 'selectTechnology': typeFilter[3] = p.value; filterEnabled = 'true'; break;
+	    case 'buttonFilterTitle':	typeFilter[0] = document.getElementById("inputFilterTitle").value; filterEnabled = 'true'; break; 
+		case 'selectPublisher':		typeFilter[1] = p.value; filterEnabled = 'true'; break;
+	    case 'selectAuthor':		typeFilter[2] = p.value; filterEnabled = 'true'; break;
+	    case 'selectTechnology':	typeFilter[3] = p.value; filterEnabled = 'true'; break;
 	  }
 	  
 	  loadDB('queryBook', 'book', typeSort[1], typeSort[0], filterEnabled, typeFilter, 1);
@@ -50,11 +49,16 @@
 	function loadData(req,queryType,queryData,currentList) {
 	  if (req.readyState == 4) {
 	    if (req.status == 200) {
-	      var db = eval('(' + req.responseText + ')');
+		  var db = req.responseText;
 		  		  
 		  switch (queryType) {
-			case 'query1':	loadSelectNames(db,queryData); break;
-			case 'queryBook':	loadTableData(db,currentList,colBookPerPage);
+			case 'query1':			db = eval('(' + db + ')'); 
+									loadSelectNames(db,queryData);
+									break;
+			case 'queryBook':		db = eval('(' + db + ')');
+									loadTableData(db,currentList,colBookPerPage);
+									break;
+			case 'queryBookData':	startDownload(db);
 		  }
 	    }
 	  }
@@ -110,7 +114,6 @@
 		row = table.insertRow(-1);
 		row.className = 'trBooks';
 		row.setAttribute('data-id',dbBook[i].id);
-//		masId[row.rowIndex-1] = dbBook[i].id;
 		cell = row.insertCell(-1);
 		cell.innerHTML = dbBook[i].title;
 		cell = row.insertCell(-1);
@@ -118,7 +121,7 @@
 		cell = row.insertCell(-1);
 		cell.innerHTML = dbBook[i].author_name;
 		cell = row.insertCell(-1);
-		cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode)">details</a> / <a href="#">download</a>';
+		cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">details</a> / <a href="#" onclick="downloadBook(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">download</a>';
 		
 		table.appendChild(row);
 	  }
@@ -128,7 +131,7 @@
 	  row.className = 'trBooks';
 	  row.setAttribute('data-id',-1);
 	  cell = row.insertCell(-1);
-	  cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode)">...</a>';
+	  cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">...</a>';
 	  for (var i=0;i<3;i++) {
 	    cell = row.insertCell(-1);
 		cell.innerHTML = '<a></a>';
@@ -162,13 +165,32 @@
 	  table.appendChild(row);
 	}
 
-	function showBookFormEdit(t) {
-	  var rowIndex = (typeof t == "undefined")? -1: t.rowIndex-1;
-	  
-	  if (rowIndex >= 0) {
-		document.getElementById('bookId').value = t.getAttribute('data-id'); //masId[rowIndex];
-		document.forms['formEditData'].submit();
+	function downloadBook(bookId) {
+	  if (bookId >= 0) {
+	    typeFilter[4] = bookId;
+		loadDB('queryBookData', 'book', typeSort[1], typeSort[0], filterEnabled, typeFilter, 1);
 	  }
+	}
+	
+	function startDownload(file) {
+	  var link = 'download.php',
+		  params = 'file=' + file.trim();
+	  
+	  if (file.trim() == 'empty') alert('no file for download');
+	  else openPage(link, params);
+	}
+	
+	function showBookFormEdit(bookId) {
+	  var link = 'book_edit.php',
+		  params = 'bookId=' + bookId;
+	  
+	  if (bookId) {
+		openPage(link, params);
+	  }
+	}
+	
+	function openPage(link, params) {
+	  document.location.href = link + '?' +params;
 	}
 	
   </script>
@@ -214,12 +236,6 @@
 	  <tfoot>
 	  </tfoot>
 	</table>
-	</div>
-	  
-	<div style="display:none">
-	  <form id="formEditData" method="POST" action="book_edit.php">
-	    <input type='text' id='bookId' name='bookId' />
-	  </form>
 	</div>
 	  
   </BODY>

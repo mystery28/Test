@@ -24,7 +24,7 @@
 	  req.send(params);
 	}
     
-	function loadData(req,queryType) {
+	function loadData(req, queryType) {
 	  if (req.readyState == 4) {
 	    if (req.status == 200) {
 	      var db = eval('(' + req.responseText + ')');
@@ -41,7 +41,8 @@
 	    workMode = 'edit';
    	
 		var rowIndex = (typeof t == "undefined")? -1: t.rowIndex-1;
-	  
+	    
+		document.getElementById("inputLogin").disabled = false;
 		if (rowIndex == -1) {
 		  document.getElementById("inputLogin").setAttribute('data-id', -1);
 		  document.getElementById("inputLogin").value = '';
@@ -49,8 +50,9 @@
 		  document.getElementById("inputRepasswd").value = '';
 		}
 		else {
-		  document.getElementById("inputLogin").setAttribute('data-id', t.getAttribute('data-id'));
+		  if (t.cells[0].innerHTML.toUpperCase() == 'ADMIN') document.getElementById("inputLogin").disabled = true;
 		  document.getElementById("inputLogin").value = t.cells[0].innerHTML;
+		  document.getElementById("inputLogin").setAttribute('data-id', t.getAttribute('data-id'));
 		  document.getElementById("inputPasswd").value = t.getAttribute('data-pass');
 		  document.getElementById("inputRepasswd").value = t.getAttribute('data-pass');
 		}

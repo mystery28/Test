@@ -59,18 +59,6 @@ td {
  width: 860px;
 }
 
-#bookEditHead1 {
- float: left;
- width: 80px;
- height: 150px;
-}
-
-#bookEditHead2 {
- float: right;
- width: 320px;
- height: 150px;
-}
-
 #inputFilterTitle {
  margin: 10px 10px;
  width: 300px;
@@ -83,7 +71,7 @@ td {
 
 #selectTechnology {
  margin: 2px;
- width: 150px;
+ width: 200px;
 }
 
 #inputDescription {
@@ -95,7 +83,9 @@ td {
 
 #inputFilePath {
  margin-top: 20px;
- width: 320px;
+ margin-left: 0px;
+ margin-bottom: 0px;
+ width: 300px;
 }
 
 #bookEditFoot {
@@ -103,7 +93,18 @@ td {
 }
 
 #selectFile {
-position: absolute;
+ margin-top: 0px;
+ position: absolute;
+}
+
+#buttonUpload {
+ width: 80px;
+ margin-bottom: 0px;
+}
+
+#result {
+ width: 200px;
+ margin-left: 100px;
 }
 
 .blockSelectFile {
@@ -129,7 +130,6 @@ position: absolute;
 z-index: 1;
 width: 85px;
 height: 21px;
-float: left;
 }
 
 .selectEditBookPA {
