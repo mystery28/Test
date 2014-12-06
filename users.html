@@ -36,26 +36,16 @@
 	  }
 	};
     		
-	function switchForm(t) {
+	function switchForm(userId, userName, UserPass) {
 	  if (workMode == 'read') {
 	    workMode = 'edit';
    	
-		var rowIndex = (typeof t == "undefined")? -1: t.rowIndex-1;
-	    
-		document.getElementById("inputLogin").disabled = false;
-		if (rowIndex == -1) {
-		  document.getElementById("inputLogin").setAttribute('data-id', -1);
-		  document.getElementById("inputLogin").value = '';
-		  document.getElementById("inputPasswd").value = '';
-		  document.getElementById("inputRepasswd").value = '';
-		}
-		else {
-		  if (t.cells[0].innerHTML.toUpperCase() == 'ADMIN') document.getElementById("inputLogin").disabled = true;
-		  document.getElementById("inputLogin").value = t.cells[0].innerHTML;
-		  document.getElementById("inputLogin").setAttribute('data-id', t.getAttribute('data-id'));
-		  document.getElementById("inputPasswd").value = t.getAttribute('data-pass');
-		  document.getElementById("inputRepasswd").value = t.getAttribute('data-pass');
-		}
+		document.getElementById("inputLogin").disabled = (userName.toUpperCase() == 'ADMIN')? true : false;
+		
+		document.getElementById("inputLogin").setAttribute('data-id', userId);
+		document.getElementById("inputLogin").value = userName;
+		document.getElementById("inputPasswd").value = UserPass;
+		document.getElementById("inputRepasswd").value = UserPass;
 		
 		document.getElementById('showForm').style.display = 'none';
 		document.getElementById('editForm').style.display = 'block';
@@ -68,29 +58,25 @@
 	  }	
 	}
 	
-	function deleteUser(t) {
-	  if (typeof t != "undefined") {
-		var idUser = t.getAttribute('data-id');
-		
-		if (idUser != -1) {
-		  loadDB('queryAdmins', 'Admins', 'deleteAdmins', [idUser,0,0]);
-		}
+	function deleteUser(userId) {
+	  if (userId != -1) {
+		loadDB('queryAdmins', 'Admins', 'deleteAdmins', [userId,0,0]);
 	  }
 	}
 	
 	function editUser() {
-	  var userName = document.getElementById("inputLogin").value,
+	  var userId = document.getElementById("inputLogin").getAttribute('data-id'),
+		  userName = document.getElementById("inputLogin").value,
 		  userPass = document.getElementById("inputPasswd").value,
-		  userRepass = document.getElementById("inputRepasswd").value,
-		  idUser = document.getElementById("inputLogin").getAttribute('data-id');
+		  userRepass = document.getElementById("inputRepasswd").value;
 	  	  
 	  if (userName == '') alert('empty login');
 	  else if (userPass != userRepass) alert("error password");
 	  else {
-		if (idUser == -1) 
+		if (userId == -1) 
 		  loadDB('queryAdmins', 'Admins', 'insertAdmins', [0,userName,userPass]);
 		else {
-		  loadDB('queryAdmins', 'Admins', 'editAdmins', [idUser,userName,userPass]);
+		  loadDB('queryAdmins', 'Admins', 'editAdmins', [userId,userName,userPass]);
 		}
 		switchForm();
 	  }
@@ -120,15 +106,13 @@
 	  for (var i = 0; i < rows; i++) {
 		row = table.insertRow(-1);
 		cell = row.insertCell(-1);
-		row.setAttribute('data-id',dbUsers[i].id);
-		row.setAttribute('data-pass',dbUsers[i].pass);
 		cell.innerHTML = dbUsers[i].login;
 		cell = row.insertCell(-1);
 		if (dbUsers[i].login.toUpperCase()=='ADMIN') {
-		  cell.innerHTML = '<a href="#" onClick="switchForm(this.parentNode.parentNode);">details</a>';
+		  cell.innerHTML = '<a href="#" onClick="switchForm('+dbUsers[i].id+', &#039;'+dbUsers[i].login+'&#039;, &#039;'+dbUsers[i].pass+'&#039);">details</a>';
 		}
 		else {
-		  cell.innerHTML = '<a href="#" onClick="switchForm(this.parentNode.parentNode);">details</a> / <a href="#" onClick="deleteUser(this.parentNode.parentNode);">delete</a>';
+		  cell.innerHTML = '<a href="#" onClick="switchForm('+dbUsers[i].id+', &#039;'+dbUsers[i].login+'&#039;, &#039;'+dbUsers[i].pass+'&#039);">details</a> / <a href="#" onClick="deleteUser('+dbUsers[i].id+');">delete</a>';
 		}
 		
 		table.appendChild(row);
@@ -161,7 +145,7 @@
 	  </tbody>
 	  <tfoot>
 		<tr>
-		  <td class="tdOptionPanel"><a href="#" onClick="switchForm();">add...</a></td>
+		  <td class="tdOptionPanel"><a href="#" onClick="switchForm(-1,'','');">add...</a></td>
 	    </tr>
 	</table>
 	</div>

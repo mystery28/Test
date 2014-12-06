@@ -113,7 +113,6 @@
 	  for (var i = beginRow; i < endRow; i++) {  
 		row = table.insertRow(-1);
 		row.className = 'trBooks';
-		row.setAttribute('data-id',dbBook[i].id);
 		cell = row.insertCell(-1);
 		cell.innerHTML = dbBook[i].title;
 		cell = row.insertCell(-1);
@@ -121,7 +120,7 @@
 		cell = row.insertCell(-1);
 		cell.innerHTML = dbBook[i].author_name;
 		cell = row.insertCell(-1);
-		cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">details</a> / <a href="#" onclick="downloadBook(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">download</a>';
+		cell.innerHTML = '<a href="#" onclick="showBookFormEdit('+dbBook[i].id+')">details</a> / <a href="#" onclick="downloadBook('+dbBook[i].id+')">download</a>';
 		
 		table.appendChild(row);
 	  }
@@ -129,9 +128,8 @@
 	  // add new book
 	  row = table.insertRow(-1);
 	  row.className = 'trBooks';
-	  row.setAttribute('data-id',-1);
 	  cell = row.insertCell(-1);
-	  cell.innerHTML = '<a href="#" onclick="showBookFormEdit(this.parentNode.parentNode.getAttribute(&#039data-id&#039))">...</a>';
+	  cell.innerHTML = '<a href="#" onclick="showBookFormEdit(-1)">...</a>';
 	  for (var i=0;i<3;i++) {
 	    cell = row.insertCell(-1);
 		cell.innerHTML = '<a></a>';
